@@ -1,17 +1,18 @@
 def calculate_average(numbers):
-    sum = 0
-    for i in range(len(numbers)):
-        sum += numbers[i]
-    average = sum / len(numbers)
-    return average
+    if not numbers:
+        return 0
+    total = sum(numbers)
+    return total / len(numbers)
 
-def unsafe_division(a, b):
+def safe_division(a, b):
+    if b == 0:
+        raise ValueError("Cannot divide by zero")
     return a / b
-
-def unused_function():
-    pass
 
 if __name__ == "__main__":
     nums = [1, 2, 3, 4, 5]
     print("Average:", calculate_average(nums))
-    print("Division:", unsafe_division(10, 0))
+    try:
+        print("Division:", safe_division(10, 2))
+    except ValueError as e:
+        print(e)
