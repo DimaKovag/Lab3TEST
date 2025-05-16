@@ -1,37 +1,27 @@
-name: SonarQube Analysis
+name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+
 
 jobs:
-  analyze:
+  build:
+    name: Build and analyze
     runs-on: windows-latest
+    
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      
-      - name: Install dependencies
-        run: |
-          pip install pylint
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-          unzip sonar-scanner-cli-*.zip
-          echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
-      
-      - name: Run Pylint
-        run: |
-          pylint --output-format=json **/*.py > pylint-report.json || true
-      
-      - name: SonarQube Scan
-        run: |
-          sonar-scanner \
-            -Dsonar.projectKey=python_bad_code \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      # - uses: SonarSource/sonarqube-quality-gate-action@v1
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
