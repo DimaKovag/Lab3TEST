@@ -1,4 +1,6 @@
 def calculate_average(numbers):
+
+    #BBBBRRRR
     sum = 0
     for i in range(len(numbers)):
         sum += numbers[i]
